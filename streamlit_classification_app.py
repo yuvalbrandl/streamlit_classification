@@ -21,7 +21,7 @@ def init_state():
     if INDEX not in state:
         state.index = 0
         gc = gspread.service_account_from_dict(st.secrets.credentials)
-        sh = gc.open("classification_DB")
+        sh = gc.open("classification_DB_sidekick")
         state.sheet = sh.worksheet("ClassificationSheet")
         state.users_sheet = sh.worksheet("RowsDivider")
         state.users = []

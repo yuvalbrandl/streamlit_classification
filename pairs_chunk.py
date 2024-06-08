@@ -25,3 +25,8 @@ class PairsChunk:
         assert(self.owner == UNASSIGNED_USER)
         self.owner = user_name
         self.sheet.update_cell(self.row_index_in_db, PAIRS_CHUNK_COLUMNS[USER_NAME] + 1, self.owner)
+
+    def chunk_still_available(self):
+        self.row = self.sheet.row_values(self.row_index_in_db)
+        self.owner = self.row[PAIRS_CHUNK_COLUMNS[USER_NAME]]
+        return self.owner == UNASSIGNED_USER

@@ -149,12 +149,16 @@ def run_labeling_page():
 
 
 def label_more():
-    state.current_user.has_more_pairs = True
-    new_chunk = state.available_chunks.popleft()
-    state.current_user.add_chunk(new_chunk)
-    print(len(state.current_user.chunks),
-          state.current_user.current_chunk_index)
-    on_next()
+    print("BOOOOOO")
+    while state.available_chunks and not state.current_user.has_more_pairs:
+        new_chunk = state.available_chunks.popleft()
+        if new_chunk.chunk_still_available():
+            state.current_user.add_chunk(new_chunk)
+            state.current_user.has_more_pairs = True
+            on_next()
+            move_page_to_labeling()
+            return
+    move_page_to_bye(reason="You finished labeling all your pairs")
 
 
 def run_bye_page():

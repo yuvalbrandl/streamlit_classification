@@ -3,13 +3,36 @@ import gspread
 from streamlit import session_state as state
 from single_pair import SinglePair
 from users import User
+from pairs_chunk import PairsChunk
 from constants import *
+from collections import deque
 
 
-def init_users(users_sheet):
-    for user_index in range(2, TOTAL_USERS + 2):
-        row = users_sheet.row_values(user_index)
-        state.users.append(User(*row))
+def init_chunk(user_index):
+    """
+    Initialize a chunk (a continues range of pairs that a
+    single users should tag) from the RowsDivider sheet.
+    """
+    new_chunk = PairsChunk(state.users_sheet, user_index)
+    user_name = new_chunk.owner
+    if user_name == UNASSIGNED_USER:
+        state.available_chunks.append(new_chunk)
+        return
+    if user_name not in state.users:  # Should create a new user
+        new_user = User(new_chunk.owner, new_chunk)
+        state.users[new_user.user_name] = new_user
+    else:
+        cur_user = state.users[user_name]
+        cur_user.add_chunk(new_chunk)
+
+
+def read_row_divider_db(users_sheet):
+    """
+    Read the RowsDivider sheet and initialize the users and their chunks.
+    """
+    total_chunks = len(users_sheet.col_values(1)) - 1
+    for user_index in range(2, total_chunks + 2):
+        init_chunk(user_index)
 
 
 def init_state():
@@ -24,10 +47,12 @@ def init_state():
         sh = gc.open("classification_DB_sidekick")
         state.sheet = sh.worksheet("ClassificationSheet")
         state.users_sheet = sh.worksheet("RowsDivider")
-        state.users = []
+        state.users = {}
+        state.available_chunks = deque()
+
         state.current_user = None
         state.page = MAIN_PAGE
-        init_users(state.users_sheet)
+        read_row_divider_db(state.users_sheet)
         columns_list = state.sheet.row_values(1)
         print(columns_list)
 
@@ -52,16 +77,16 @@ def on_apply_home_page(user_name):
     It sets the current user and the starting index of the user.
     :param user_name: a unique username
     """
-    state.current_user = [user for user in state.users
+    state.current_user = [user for user in state.users.values()
                           if user.user_name == user_name][0]
-    state.index = state.current_user.start_row_index
+    state.index = state.current_user.current_chunk.start_row_index
     on_next()
 
 
 def run_home_page():
     st.title("Sentence Similarity Classifier")
     user_name = st.radio("Please choose your name:",
-                         [user.user_name for user in state.users])
+                         [user.user_name for user in state.users.values()])
     print("user_name", user_name)
     print(type(user_name))
     st.button("Apply", on_click=on_apply_home_page, args=(user_name,))
@@ -73,11 +98,23 @@ def get_next_pair():
     Makes sure the pair is not labeled yet,
     and that the pair is in the user's range.
     """
-    if state.index <= state.current_user.end_row_index:
+    assert (state.current_user is not None)
+    assert (state.current_user.current_chunk is not None)
+    if state.index <= state.current_user.current_chunk.end_row_index:
         state.current_pair = SinglePair(state.sheet, state.index, LABELS)
         if int(state.current_pair.label):
             state.index += 1
             get_next_pair()
+    elif state.current_user.current_chunk_index < len(
+            state.current_user.chunks) - 1:
+        state.current_user.current_chunk_index += 1
+        state.current_user.current_chunk = state.current_user.chunks[
+            state.current_user.current_chunk_index]
+        state.index = state.current_user.current_chunk.start_row_index
+        print(state.index)
+        get_next_pair()
+    else:
+        state.current_user.has_more_pairs = False
 
 
 def on_next():
@@ -86,7 +123,7 @@ def on_next():
     :return:
     """
     get_next_pair()
-    if state.index <= state.current_user.end_row_index:
+    if state.current_user.has_more_pairs:
         move_page_to_labeling()
     else:
         move_page_to_bye(reason="You finished labeling all your pairs")
@@ -111,10 +148,21 @@ def run_labeling_page():
         st.button("Next", on_click=on_next)
 
 
+def label_more():
+    state.current_user.has_more_pairs = True
+    new_chunk = state.available_chunks.popleft()
+    state.current_user.add_chunk(new_chunk)
+    print(len(state.current_user.chunks),
+          state.current_user.current_chunk_index)
+    on_next()
+
+
 def run_bye_page():
     st.title("Bye Bye")
     st.write("Thank you for labeling!")
-    st.write("You can close the browser now")
+    if state.available_chunks:
+        st.write("There are still plenty of pairs to label!")
+        st.button("Lets label 10 more pairs!", on_click=label_more)
 
 
 def main():

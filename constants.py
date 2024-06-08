@@ -9,5 +9,10 @@ LABELS = ["A != B: The sentences discuss different topics",
 
 INDEX = "index"
 
+DB_INDEXES = {
+    "USER_NAME_INDEX": 0,
+    "START_ROW_INDEX": 1,
+    "END_ROW_INDEX": 2,
+}
 
-TOTAL_USERS = 4
+UNASSIGNED_USER = "unassigned"

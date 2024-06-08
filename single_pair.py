@@ -8,8 +8,7 @@ LABEL = "label"
 
 PAIR_COLUMNS = {SENTENCE_A: 0,
                 SENTENCE_B: 1,
-                USER_ID: 2,
-                LABEL: 3}
+                LABEL: 5}
 
 
 class SinglePair:
@@ -19,7 +18,6 @@ class SinglePair:
         self.row = sheet.row_values(row_index)
         self.sentence_a = self.row[PAIR_COLUMNS[SENTENCE_A]]
         self.sentence_b = self.row[PAIR_COLUMNS[SENTENCE_B]]
-        self.user_id = self.row[PAIR_COLUMNS[USER_ID]]
         self.label = self.row[PAIR_COLUMNS[LABEL]]
         self.valid_labels = valid_labels
 

@@ -140,16 +140,13 @@ def run_labeling_page():
     st.write(f"**{state.current_pair.sentence_b}**")
     result = st.radio("What is the hierarchy of the sentences?", LABELS)
     if st.button("Submit"):
-        st.write(f"For sentence a: {state.current_pair.sentence_a}  \n"
-                 f"and sentence b: {state.current_pair.sentence_b}  \n"
-                 f"You chose {result}")
+        st.write(f"You chose {result}")
         state.current_pair.set_label(result)
         state.current_pair.update_pair()
         st.button("Next", on_click=on_next)
 
 
 def label_more():
-    print("BOOOOOO")
     while state.available_chunks and not state.current_user.has_more_pairs:
         new_chunk = state.available_chunks.popleft()
         if new_chunk.chunk_still_available():

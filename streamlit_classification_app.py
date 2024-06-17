@@ -142,7 +142,7 @@ def run_labeling_page():
     st.write(f"**{state.current_pair.sentence_a}**")
     st.markdown(f"### Sentence B:", unsafe_allow_html=True)
     st.write(f"**{state.current_pair.sentence_b}**")
-    result = st.radio("What is the hierarchy of the sentences?", LABELS)
+    result = st.radio("What is the hierarchy of the sentences?", LABELS, index=1)
     st.button("Submit", on_click=on_next, args=(result,))
     # if st.button("Submit"):
     #     st.write(f"You chose {result}")

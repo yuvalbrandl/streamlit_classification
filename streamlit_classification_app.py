@@ -133,7 +133,7 @@ def run_labeling_page():
     st.button("Done for today", type="primary", on_click=move_page_to_bye)
     st.title("Sentence Similarity Classifier")
     st.header("Pairs to label")
-    st.write(f"index is: {state.index}")
+    st.write(f"You are currently labeling pair index: {state.index}")
     st.markdown(f"### Sentence A:", unsafe_allow_html=True)
     st.write(f"**{state.current_pair.sentence_a}**")
     st.markdown(f"### Sentence B:", unsafe_allow_html=True)
@@ -142,6 +142,7 @@ def run_labeling_page():
     if st.button("Submit"):
         st.write(f"You chose {result}")
         state.current_pair.set_label(result)
+        state.current_pair.set_user_name(state.current_user.user_name)
         state.current_pair.update_pair()
         st.button("Next", on_click=on_next)
 

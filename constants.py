@@ -2,10 +2,10 @@ MAIN_PAGE = 1
 LABELING_PAGE = 2
 BYE_PAGE = 3
 
-LABELS = ["A != B: The sentences discuss different topics",
-          "A ~= B: The sentences are equally specific",
-          "A < B: Sentence A is more specific than B",
-          "A > B: Sentence B is more specific than A", ]
+LABELS = ["Different Topics / Too General",
+          "Same Topic, Equally Specific",
+          "Same Topic, A More Specific",
+          "Same Topic, B More Specific", ]
 
 INDEX = "index"
 

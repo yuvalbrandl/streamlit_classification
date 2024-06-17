@@ -117,11 +117,15 @@ def get_next_pair():
         state.current_user.has_more_pairs = False
 
 
-def on_next():
+def on_next(result=None):
     """
     Handles clicks that require next pair
     :return:
     """
+    if result:
+        state.current_pair.set_label(result)
+        state.current_pair.set_user_name(state.current_user.user_name)
+        state.current_pair.update_pair()
     get_next_pair()
     if state.current_user.has_more_pairs:
         move_page_to_labeling()
@@ -139,12 +143,13 @@ def run_labeling_page():
     st.markdown(f"### Sentence B:", unsafe_allow_html=True)
     st.write(f"**{state.current_pair.sentence_b}**")
     result = st.radio("What is the hierarchy of the sentences?", LABELS)
-    if st.button("Submit"):
-        st.write(f"You chose {result}")
-        state.current_pair.set_label(result)
-        state.current_pair.set_user_name(state.current_user.user_name)
-        state.current_pair.update_pair()
-        st.button("Next", on_click=on_next)
+    st.button("Submit", args=(result,))
+    # if st.button("Submit"):
+    #     st.write(f"You chose {result}")
+    #     state.current_pair.set_label(result)
+    #     state.current_pair.set_user_name(state.current_user.user_name)
+    #     state.current_pair.update_pair()
+    #     st.button("Next", on_click=on_next)
 
 
 def label_more():

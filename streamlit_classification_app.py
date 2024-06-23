@@ -134,7 +134,7 @@ def on_next(result=None):
 
 
 def run_labeling_page():
-    st.button("Done for today", type="primary", on_click=move_page_to_bye)
+    st.button("Done for today", type="primary", on_click=move_page_to_bye, args=("See you next time!",))
     st.title("Sentence Similarity Classifier")
     st.header("Pairs to label")
     st.write(f"You are currently labeling pair index: {state.index}")
@@ -167,7 +167,7 @@ def label_more():
 def run_bye_page():
     st.title("Bye Bye")
     st.write("Thank you for labeling!")
-    if state.available_chunks:
+    if state.available_chunks and not state.current_user.has_more_pairs:
         st.write("There are still plenty of pairs to label!")
         st.button("Lets label 10 more pairs!", on_click=label_more)
 

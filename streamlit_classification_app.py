@@ -6,6 +6,7 @@ from users import User
 from pairs_chunk import PairsChunk
 from constants import *
 from collections import deque
+import traceback
 
 
 def init_chunk(user_index):
@@ -79,7 +80,7 @@ def on_apply_home_page(user_name):
     """
     state.current_user = [user for user in state.users.values()
                           if user.user_name == user_name][0]
-    state.index = state.current_user.current_chunk.start_row_index
+    state.index = state.current_user.current_chunk.next_to_label_index
     on_next()
 
 
@@ -126,6 +127,8 @@ def on_next(result=None):
         state.current_pair.set_label(result)
         state.current_pair.set_user_name(state.current_user.user_name)
         state.current_pair.update_pair()
+        if state.current_user.current_chunk.next_to_label_index < state.current_user.current_chunk.end_row_index:
+            state.current_user.current_chunk.update_next_to_label_index(state.index + 1)
     get_next_pair()
     if state.current_user.has_more_pairs:
         move_page_to_labeling()
@@ -186,4 +189,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except gspread.exceptions.APIError as e:
+        raise Exception(f"got API error {e.response.status_code} {e.response.reason} {e.response.text}\n{traceback.format_exc()}")

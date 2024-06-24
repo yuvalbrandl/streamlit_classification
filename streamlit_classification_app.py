@@ -189,7 +189,7 @@ def main():
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except gspread.exceptions.APIError as e:
-        raise Exception(f"got API error {e.response.status_code} {e.response.reason} {e.response.text}\n{traceback.format_exc()}")
+    # try:
+    main()
+    # except gspread.exceptions.APIError as e:
+    #     raise Exception(f"got API error {e.response.status_code} {e.response.reason} {e.response.text}\n{traceback.format_exc()}")

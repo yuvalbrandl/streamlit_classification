@@ -1,4 +1,5 @@
 from constants import UNASSIGNED_USER
+from app_api_utils import read_row_values
 
 USER_NAME = "USER_NAME"
 STARTING_ROW = "STARTING_ROW"
@@ -17,7 +18,8 @@ class PairsChunk:
     def __init__(self, sheet, row_index_in_db, next_to_label_index=None):
         self.row_index_in_db = int(row_index_in_db)
         self.sheet = sheet
-        self.row = sheet.row_values(row_index_in_db)
+        self.row = read_row_values(sheet, self.row_index_in_db)
+        # self.row = sheet.row_values(row_index_in_db)
         self.owner = self.row[PAIRS_CHUNK_COLUMNS[USER_NAME]]
         self.start_row_index = int(self.row[PAIRS_CHUNK_COLUMNS[STARTING_ROW]])
         self.end_row_index = int(self.row[PAIRS_CHUNK_COLUMNS[END_ROW]])

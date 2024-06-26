@@ -7,6 +7,7 @@ from pairs_chunk import PairsChunk
 from constants import *
 from collections import deque
 import traceback
+from app_api_utils import read_sheet
 
 
 def init_chunk(user_index):
@@ -46,8 +47,10 @@ def init_state():
         state.index = 0
         gc = gspread.service_account_from_dict(st.secrets.credentials)
         sh = gc.open("classification_DB_sidekick")
-        state.sheet = sh.worksheet("ClassificationSheet")
-        state.users_sheet = sh.worksheet("RowsDivider")
+        state.sheet = read_sheet(sh, "ClassificationSheet")
+        state.users_sheet = read_sheet(sh, "RowsDivider")
+        # state.sheet = sh.worksheet("ClassificationSheet")
+        # state.users_sheet = sh.worksheet("RowsDivider")
         state.users = {}
         state.available_chunks = deque()
 

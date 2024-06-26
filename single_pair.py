@@ -1,4 +1,5 @@
 from users import User
+from app_api_utils import read_row_values
 
 SENTENCE_A = "sentence_a"
 SENTENCE_B = "sentence_b"
@@ -17,7 +18,8 @@ class SinglePair:
     def __init__(self, sheet, row_index, valid_labels):
         self.row_index = row_index
         self.sheet = sheet
-        self.row = sheet.row_values(row_index)
+        self.row = read_row_values(sheet, row_index)
+        # self.row = sheet.row_values(row_index)
         self.sentence_a = self.row[PAIR_COLUMNS[SENTENCE_A]]
         self.sentence_b = self.row[PAIR_COLUMNS[SENTENCE_B]]
         self.label = self.row[PAIR_COLUMNS[LABEL]]

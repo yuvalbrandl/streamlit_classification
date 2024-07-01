@@ -84,6 +84,7 @@ def on_apply_home_page(user_name):
     state.current_user = [user for user in state.users.values()
                           if user.user_name == user_name][0]
     state.index = state.current_user.current_chunk.next_to_label_index
+    print(state.current_user.current_chunk)
     on_next()
 
 
@@ -104,6 +105,7 @@ def get_next_pair():
     """
     assert (state.current_user is not None)
     assert (state.current_user.current_chunk is not None)
+    print("cur index is ", state.index)
     if state.index <= state.current_user.current_chunk.end_row_index:
         state.current_pair = SinglePair(state.sheet, state.index, LABELS)
         if int(state.current_pair.label):
@@ -114,7 +116,7 @@ def get_next_pair():
         state.current_user.current_chunk_index += 1
         state.current_user.current_chunk = state.current_user.chunks[
             state.current_user.current_chunk_index]
-        state.index = state.current_user.current_chunk.start_row_index
+        state.index = state.current_user.current_chunk.next_to_label_index
         print(state.index)
         get_next_pair()
     else:
@@ -130,7 +132,7 @@ def on_next(result=None):
         state.current_pair.set_label(result)
         state.current_pair.set_user_name(state.current_user.user_name)
         state.current_pair.update_pair()
-        if state.current_user.current_chunk.next_to_label_index < state.current_user.current_chunk.end_row_index:
+        if state.current_user.current_chunk.next_to_label_index < state.current_user.current_chunk.end_row_index - 1:
             state.current_user.current_chunk.update_next_to_label_index(state.index + 1)
     get_next_pair()
     if state.current_user.has_more_pairs:

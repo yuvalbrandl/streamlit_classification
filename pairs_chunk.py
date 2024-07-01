@@ -15,7 +15,7 @@ PAIRS_CHUNK_COLUMNS = {
 
 
 class PairsChunk:
-    def __init__(self, sheet, row_index_in_db, next_to_label_index=None):
+    def __init__(self, sheet, row_index_in_db):
         self.row_index_in_db = int(row_index_in_db)
         self.sheet = sheet
         self.row = read_row_values(sheet, self.row_index_in_db)
@@ -23,6 +23,9 @@ class PairsChunk:
         self.owner = self.row[PAIRS_CHUNK_COLUMNS[USER_NAME]]
         self.start_row_index = int(self.row[PAIRS_CHUNK_COLUMNS[STARTING_ROW]])
         self.end_row_index = int(self.row[PAIRS_CHUNK_COLUMNS[END_ROW]])
+        next_to_label_index = None
+        if len(self.row) > PAIRS_CHUNK_COLUMNS[NEXT_TO_LABEL_INDEX]:
+            next_to_label_index = int(self.row[PAIRS_CHUNK_COLUMNS[NEXT_TO_LABEL_INDEX]])
         self.next_to_label_index = self.start_row_index if next_to_label_index is None else next_to_label_index
 
     def update_owner(self, user_name):
